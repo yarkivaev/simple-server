@@ -1,4 +1,39 @@
 /**
+ * Appends one decoded query pair, promoting a repeated key to an array.
+ *
+ * @param {object} acc - accumulated query object
+ * @param {string} key - decoded query key
+ * @param {string} val - decoded query value
+ * @returns {object} next query object
+ */
+function assign(acc, key, val) {
+    if (Object.hasOwn(acc, key)) {
+        const prev = acc[key];
+        return { ...acc, [key]: Array.isArray(prev) ? [...prev, val] : [prev, val] };
+    }
+    return { ...acc, [key]: val };
+}
+
+/**
+ * Parses a raw query string into an object. A repeated key becomes an array.
+ *
+ * @param {string|undefined} raw - text after `?`, or empty
+ * @returns {object} query map of strings or string arrays
+ *
+ * @example
+ *   query('topic=a&topic=b'); // { topic: ['a', 'b'] }
+ */
+function query(raw) {
+    if (!raw) {
+        return {};
+    }
+    return raw.split('&').reduce((acc, pair) => {
+        const [key, val] = pair.split('=');
+        return assign(acc, decodeURIComponent(key || ''), decodeURIComponent(val || ''));
+    }, {});
+}
+
+/**
  * HTTP route with path matching and parameter extraction.
  * Returns immutable object with matches() and handle() methods.
  *
@@ -41,14 +76,7 @@ export default function route(method, path, action) {
             const extracted = params.reduce((acc, param) => {
                 return { ...acc, [param.name]: urlParts[param.index] };
             }, {});
-            const queryString = request.url.split('?')[1];
-            const query = queryString
-                ? queryString.split('&').reduce((acc, pair) => {
-                    const [key, val] = pair.split('=');
-                    return { ...acc, [key]: decodeURIComponent(val || '') };
-                }, {})
-                : {};
-            return action(request, response, extracted, query);
+            return action(request, response, extracted, query(request.url.split('?')[1]));
         }
     };
 }

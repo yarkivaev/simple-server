@@ -121,4 +121,36 @@ describe('route', function() {
         rt.handle(request, {});
         assert(extracted.flag === '', 'empty value should be empty string');
     });
+
+    it('keeps a single repeated query key as a string', function() {
+        const topic = `MX210/icht-${1 + Math.floor(Math.random() * 4)}/GET/AI4/VALUE`;
+        let extracted;
+        const rt = route('GET', '/readings', (req, res, params, query) => {
+            extracted = query;
+        });
+        rt.handle({ method: 'GET', url: `/readings?topic=${encodeURIComponent(topic)}` }, {});
+        assert.strictEqual(
+            extracted.topic,
+            topic,
+            'a single topic query key must stay a string'
+        );
+    });
+
+    it('collects repeated query keys into an array', function() {
+        const first = `MX210/icht-\u0442\u0435\u0441\u0442-${Math.floor(Math.random() * 90 + 10)}/GET/AI1/VALUE`;
+        const second = `MX210/icht-\u0442\u0435\u0441\u0442-${Math.floor(Math.random() * 90 + 10)}/GET/AI4/VALUE`;
+        let extracted;
+        const rt = route('GET', '/readings', (req, res, params, query) => {
+            extracted = query;
+        });
+        rt.handle({
+            method: 'GET',
+            url: `/readings?topic=${encodeURIComponent(first)}&topic=${encodeURIComponent(second)}`
+        }, {});
+        assert.deepStrictEqual(
+            extracted.topic,
+            [first, second],
+            'repeated topic query keys must not collapse to the last value'
+        );
+    });
 });
