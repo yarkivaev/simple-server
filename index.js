@@ -3,7 +3,7 @@
  *
  * @example
  *   import http from 'http';
- *   import { route, routes, jsonResponse } from '@yarkivaev/simple-server';
+ *   import { route, routes, jsonResponse, jobs, jobRoutes } from '@yarkivaev/simple-server';
  *
  *   const api = routes([
  *     route('GET', '/health', async (req, res) => {
@@ -21,8 +21,10 @@ export { default as timeExpression } from './src/objects/timeExpression.js';
 export { default as pagination } from './src/objects/pagination.js';
 export { default as cursor } from './src/objects/cursor.js';
 export { default as virtualClock } from './src/objects/virtualClock.js';
+export { default as jobs } from './src/objects/jobs.js';
 
 export { default as routes } from './src/server/routes.js';
+export { default as jobRoutes } from './src/server/jobRoutes.js';
 export {
     parseRequestTimeoutMs,
     DEFAULT_REQUEST_TIMEOUT_MS,
