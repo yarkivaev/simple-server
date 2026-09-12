@@ -1,6 +1,6 @@
 # @yarkivaev/simple-server
 
-Generic HTTP/SSE building blocks: `route`, `routes`, JSON/SSE responses, request timeouts, pagination, virtual clock.
+Generic HTTP/SSE building blocks: `route`, `routes`, JSON/SSE responses, request timeouts, pagination, virtual clock, in-memory `jobs` with `jobRoutes`.
 
 Repository: `https://github.com/yarkivaev/simple-server`
 
